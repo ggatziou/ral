@@ -1,0 +1,100 @@
+<zk xmlns:x="xhtml" >
+    <style>   
+        .nav_toolbar .z-toolbarbutton-content i { font-size: 20px;}
+        .nav_tabs .z-tabpanel { padding: 0; border-bottom: 0 none;}
+        .nav_tabs .z-tabpanels .z-toolbarbutton-content { padding: 4px;}
+        .nav_category { cursor:pointer; }
+        .nav_text { color: #696569; font-size : 24px; font-weight: bold;}
+    </style>
+    <tabbox width="100%" sclass="nav_tabs">
+        <tabs id="tabs">
+            <tab label="Allocation" />
+            <tab label="Projects" />
+            <tab label="Resources" />
+            <tab label="Import" />
+        </tabs>
+        <tabpanels>
+            <tabpanel>
+                <div apply="org.zkoss.bind.BindComposer" onOK="@command('search')"  viewModel="@id('vm') @init('com.meluna.springbootjdbc.zk.vm.AllocationViewModel')">
+                
+ 
+				<!-- <vbox style="margin-top:20px" >
+					<label value="@load(vm.selectedAllocation.lastName)" />
+					<label value="@load(vm.selectedAllocation.title)" />
+					<label value="@load(vm.selectedAllocation.endDate)" />
+				</vbox> -->
+				
+				<hlayout style="margin-top:20px" width="100%">
+
+					<vlayout hflex="1">
+						<hlayout>Resource: <label value="@load(vm.selectedAllocation.lastName)" /></hlayout>
+						<hlayout>Project: <label value="@load(vm.selectedAllocation.title)" /></hlayout>
+						<hlayout>End date: <label value="@load(vm.selectedAllocation.endDate)" /></hlayout>
+						<hlayout>Allocation ID: <label value="@load(vm.selectedAllocation.allocationId)" /></hlayout>
+					</vlayout>
+				</hlayout>
+
+                
+                
+                Keyword:
+				<textbox value="@save(vm.keyword)" />
+				<button label="Search" iconSclass="z-icon-search" onClick="@command('search')" style="margin: 0 0 5px 5px"/>
+	
+	
+                <listbox model="@load(vm.allocationList)" 
+                emptyMessage="No allocation records found"
+                selectedItem="@save(vm.selectedAllocation)">
+                
+                <listhead>
+	                <!-- <listheader label="allocationId"/> -->
+	                <listheader label="personId"/>
+	                <listheader label="projectId"/>
+	                <listheader label="endDate"/>
+	                <listheader label="planviewProjectId"/>
+	                <listheader label="title"/>
+	                <listheader label="firstName"/>
+	                <listheader label="lastName"/>
+    	        </listhead>
+    	        <template name="model">
+    	        <listitem>
+    	        	<!-- <listcell label="@init(each.allocationId)"></listcell> -->
+    	        	<listcell label="@init(each.personId)"></listcell>
+    	        	<listcell label="@init(each.projectId)"></listcell>
+    	        	<listcell label="@init(each.endDate)"></listcell>
+    	        	<listcell label="@init(each.planviewProjectId)"></listcell>
+    	        	<listcell label="@init(each.title)"></listcell>
+    	        	<listcell label="@init(each.firstName)"></listcell>
+    	        	<listcell label="@init(each.lastName)"></listcell>
+    	        </listitem>
+    	        </template>
+                
+                
+                </listbox>
+                </div>
+            </tabpanel>
+            <tabpanel>
+             	<label id="Projectstext" sclass="nav_text">Εδώ θα μπει η φορμα και η Browse για το Projects</label>
+            </tabpanel>
+            <tabpanel>
+                <label id="Resourcestext" sclass="nav_text">Εδώ θα μπει η φορμα και η Browse για το Resources</label>
+            </tabpanel>
+            <tabpanel>
+                <window id="test" border="normal" height="98%"
+					apply="org.zkoss.bind.BindComposer"
+					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.FileUploadVM')">
+					<hbox>
+						<label value="Upload Timesheet excel" />
+						<button label="Upload" upload="true"
+							onUpload="@command('onUploadPDF',upEvent=event)">
+						</button>
+					</hbox>
+			
+					<iframe height="100%" width="100%" id="reportframe"
+						content="@bind(vm.fileContent)">
+					</iframe>
+				</window>
+            </tabpanel>
+        </tabpanels>
+    </tabbox>
+    <separator height="30px"></separator>
+</zk>
