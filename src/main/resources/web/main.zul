@@ -79,19 +79,24 @@
                 <label id="Resourcestext" sclass="nav_text">Εδώ θα μπει η φορμα και η Browse για το Resources</label>
             </tabpanel>
             <tabpanel>
-                <window id="test" border="normal" height="98%"
-					apply="org.zkoss.bind.BindComposer"
-					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.FileUploadVM')">
-					<hbox>
+                <window id="test" border="normal" height="98%">
+                	<vbox>
+					<hbox apply="org.zkoss.bind.BindComposer"
+					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.TimesheetExcelUploadVM')">
 						<label value="Upload Timesheet excel" />
 						<button label="Upload" upload="true"
 							onUpload="@command('onUploadPDF',upEvent=event)">
 						</button>
 					</hbox>
-			
-					<iframe height="100%" width="100%" id="reportframe"
-						content="@bind(vm.fileContent)">
-					</iframe>
+					<hbox apply="org.zkoss.bind.BindComposer"
+					
+					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.DemandExcelUploadVM')">
+						<label value="Upload Demand excel" />
+						<button label="Upload" upload="true"
+							onUpload="@command('onUploadPDF',upEvent=event)">
+						</button>
+					</hbox>
+					</vbox>
 				</window>
             </tabpanel>
         </tabpanels>

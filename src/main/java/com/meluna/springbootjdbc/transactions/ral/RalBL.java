@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.meluna.springbootjdbc.pojos.ral.Allocation;
+import com.meluna.springbootjdbc.pojos.ral.Demand;
 import com.meluna.springbootjdbc.pojos.ral.Timesheet;
 
 @Service
@@ -70,6 +71,33 @@ public class RalBL {
 	            ret.setObject(5, newTimesheet.getTmsDate());
 	            ret.setObject(6, newTimesheet.getLastModifiedDate());
 	            ret.setObject(7, newTimesheet.getMonth());
+	            return ret;
+	        }
+	    });
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public void saveDemand(Demand newDemand) throws Exception
+	{
+		
+		if(newDemand.getID()==null)
+	 	{
+			return;
+	 	}
+		
+		String sql = "insert into ral.demand values(?,?,?,?,?,?) ";		
+		
+		jdbcTemplate.update(new PreparedStatementCreator() {
+	        @Override
+	        public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException {
+	            final PreparedStatement ret = conn.prepareStatement(sql);
+	            ret.setObject(1, newDemand.getID());
+	            ret.setObject(2, newDemand.getTitle());
+	            ret.setObject(3, newDemand.getStatus());
+	            ret.setObject(4, newDemand.getStartDate());
+	            ret.setObject(5, newDemand.getTargetDate());
+	            ret.setObject(6, newDemand.getCompletionDate());
+	            
 	            return ret;
 	        }
 	    });
