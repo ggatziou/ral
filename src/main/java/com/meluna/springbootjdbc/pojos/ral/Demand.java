@@ -12,5 +12,6 @@ public @Data class Demand {
 	Date startDate;
 	Date targetDate;
 	Date completionDate;
+	Boolean favorite;
 
 }

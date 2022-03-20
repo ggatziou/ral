@@ -49,25 +49,25 @@ public class TimesheetExcelUploadVM extends FileUploadVM{
 		              Cell cell = cellItr.next();
 		              		              
 		              switch (cell.getColumnIndex()) {
-		              case 0:
+		              case 1:
 						timesheet.setResource((String)getValueFromCell(cell));
 						break;					
-		              case 3:
+		              case 7:
 						timesheet.setProject((String)getValueFromCell(cell));
 						break;
-		              case 4:
+		              case 8:
 						timesheet.setID((Double)getValueFromCell(cell));
 						break;
-		              case 6:
+		              case 18:
 						timesheet.setTotalHours((Double)getValueFromCell(cell));
 						break;	
-		              case 7:
+		              case 19:
 						timesheet.setTmsDate((Date)getValueFromCell(cell));
 						break;
-		              case 8:
+		              case 20:
 						timesheet.setLastModifiedDate((Date)getValueFromCell(cell));
 						break;	
-		              case 9:
+		              case 21:
 						timesheet.setMonth((String)getValueFromCell(cell));
 						break;
 	             

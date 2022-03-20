@@ -17,7 +17,12 @@ public class AllocationViewModel {
 	
 	private AllocationData allocationData = new AllocationData(); 
 	
-	
+	@Init 
+	public void startPage()
+	{
+		allocationList.clear();
+		allocationList.addAll(allocationData.search(keyword));
+	}
 	
 	@Command
 	public void search(){

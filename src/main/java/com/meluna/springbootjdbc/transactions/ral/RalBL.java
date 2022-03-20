@@ -12,8 +12,12 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.meluna.springbootjdbc.Const;
 import com.meluna.springbootjdbc.pojos.ral.Allocation;
 import com.meluna.springbootjdbc.pojos.ral.Demand;
+import com.meluna.springbootjdbc.pojos.ral.PrjComment;
+import com.meluna.springbootjdbc.pojos.ral.PrjMisc;
+import com.meluna.springbootjdbc.pojos.ral.Resource;
 import com.meluna.springbootjdbc.pojos.ral.Timesheet;
 
 @Service
@@ -103,5 +107,174 @@ public class RalBL {
 	    });
 	}
 	
+	
+	
+	
+	@Transactional(rollbackFor = Exception.class)
+	public List<Resource> getResourceRows() throws Exception
+	{
+		
+		StringBuffer  sqlSB = new StringBuffer();
+		sqlSB.append("select * from ral.resources ");
+		sqlSB.append("order  by name asc");
+		
+		List<Resource> listRows = null;
+		
+			listRows = jdbcTemplate.query(sqlSB.toString(), new BeanPropertyRowMapper<Resource>(Resource.class));
+		
+			
+	
+		return listRows;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public List<Demand> getDemandRows(String keyword) throws Exception
+	{
+		
+		StringBuffer  sqlSB = new StringBuffer();
+		sqlSB.append("select d.*, case when m.prid is not null then true else false end as favorite ");
+		sqlSB.append("from ral.demand d ");
+		sqlSB.append("left join prjmisc m on d.id = m.prid and m.miscCode='favorite' ");
+		sqlSB.append("where title not in ('ADMIN - Applications', ");
+		sqlSB.append("'SUP - Corporate Loan - L.O.S.', ");
+		sqlSB.append("'SUP - Corporate Loan - CSS', ");
+		sqlSB.append("'SUP - Corporate Loan - Peripheral Appl.', ");
+		sqlSB.append("'DATA - Corporate Loan Origination Systems')");
+		sqlSB.append(" and d.status in ( 'On Hold', 'In progress', 'Not started')");
+		
+		//, 'Rejected' 'Completed','Canceled',
+		List<Demand> listRows = null;
+		
+		
+		
+		if(keyword!=null && keyword.trim().length()>0)
+		{
+			keyword = keyword
+				    .replace("!", "!!")
+				    .replace("%", "!%")
+				    .replace("_", "!_")
+				    .replace("[", "![");
+			
+			sqlSB.append("and (title like ? OR d.id = ?)");
+			sqlSB.append("order  by status asc, startDate DESC");
+			
+			String ps_keyword = "%" + keyword.trim() + "%";
+
+			String s_keyword = keyword.trim();
+			
+//			Long l_keyword = 0L;
+//			
+//			
+//			
+//					Long.valueOf(keyword.trim());
+			
+			listRows = jdbcTemplate.query(sqlSB.toString(), new BeanPropertyRowMapper<Demand>(Demand.class), ps_keyword, s_keyword);
+		}
+		else
+		{
+			sqlSB.append("order  by status asc, startDate DESC");
+			listRows = jdbcTemplate.query(sqlSB.toString(), new BeanPropertyRowMapper<Demand>(Demand.class));
+		}
+			
+	
+		return listRows;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public List<Demand> getDemandRows() throws Exception
+	{
+		
+		return getDemandRows(null);
+	}
+	
+	
+	@Transactional(rollbackFor = Exception.class)
+	public List<PrjComment> getAllPrjComments(String projectId) throws Exception
+	{
+		String sql = "select  * from ral.prjcomments p \r\n" + 
+				"where p.prid = ?"
+				+ "order by insertedAt desc";
+		
+		List<PrjComment> listRows = jdbcTemplate.query(sql, new BeanPropertyRowMapper<PrjComment>(PrjComment.class), Double.valueOf(projectId));
+		return listRows;
+
+		
+		//DEPRECATED
+//		 return jdbcTemplate.query(sql, new Object[]{projectId}, (rs, rowNum) ->
+//         new PrjComment(
+//                 rs.getInt("id"),
+//                 rs.getDouble("prid"),
+//                 rs.getString("comment"),
+//                 rs.getTimestamp("insertedAt")
+//         ));
+		
+		
+
+
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public void savePrjComment(PrjComment newComment) throws Exception
+	{
+		
+		if(newComment.getPrid()==0)
+	 	{
+			return;
+	 	}
+		
+		String sql = "insert into ral.prjcomments(prid, comment, insertedAt) values(?,?,current_timestamp) ";		
+		
+		jdbcTemplate.update(new PreparedStatementCreator() {
+	        @Override
+	        public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException {
+	            final PreparedStatement ret = conn.prepareStatement(sql);
+	            ret.setObject(1, newComment.getPrid());
+	            ret.setObject(2, newComment.getComment());
+	            
+	            return ret;
+	        }
+	    });
+	}
+	
+	
+	@Transactional(rollbackFor = Exception.class)
+	public void updatePrjMisc(PrjMisc prjMisc) throws Exception
+	{
+		
+		if(prjMisc.getAction().equals(Const.ACTION_INSERT))
+		{
+			
+			String sql = "insert into prjmisc(prid,miscCode, insertedAt ) values (?, ?, current_timestamp )\r\n" + 
+					"ON DUPLICATE KEY UPDATE id=id ";		
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {
+		        @Override
+		        public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException {
+		            final PreparedStatement ret = conn.prepareStatement(sql);
+		            ret.setObject(1, prjMisc.getPrid());
+		            ret.setObject(2, prjMisc.getMiscCode());
+		            
+		            return ret;
+		        }
+		    });
+			
+			
+		}
+		else if (prjMisc.getAction().equals(Const.ACTION_DELETE))
+		{
+			String sql = "delete from prjmisc where prid = ? ";		
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {
+		        @Override
+		        public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException {
+		            final PreparedStatement ret = conn.prepareStatement(sql);
+		            ret.setObject(1, prjMisc.getPrid());		            
+		            
+		            return ret;
+		        }
+		    });
+		}		
+		
+	}
 
 }

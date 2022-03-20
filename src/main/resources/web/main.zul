@@ -1,105 +1,191 @@
-<zk xmlns:x="xhtml" >
-    <style>   
-        .nav_toolbar .z-toolbarbutton-content i { font-size: 20px;}
-        .nav_tabs .z-tabpanel { padding: 0; border-bottom: 0 none;}
-        .nav_tabs .z-tabpanels .z-toolbarbutton-content { padding: 4px;}
-        .nav_category { cursor:pointer; }
-        .nav_text { color: #696569; font-size : 24px; font-weight: bold;}
-    </style>
-    <tabbox width="100%" sclass="nav_tabs">
-        <tabs id="tabs">
-            <tab label="Allocation" />
-            <tab label="Projects" />
-            <tab label="Resources" />
-            <tab label="Import" />
-        </tabs>
-        <tabpanels>
-            <tabpanel>
-                <div apply="org.zkoss.bind.BindComposer" onOK="@command('search')"  viewModel="@id('vm') @init('com.meluna.springbootjdbc.zk.vm.AllocationViewModel')">
-                
- 
-				<!-- <vbox style="margin-top:20px" >
-					<label value="@load(vm.selectedAllocation.lastName)" />
-					<label value="@load(vm.selectedAllocation.title)" />
-					<label value="@load(vm.selectedAllocation.endDate)" />
-				</vbox> -->
-				
-				<hlayout style="margin-top:20px" width="100%">
+<?link rel="stylesheet" type="text/css" href="/css/listbox.css"?>
+<zk xmlns:x="xhtml">
 
-					<vlayout hflex="1">
-						<hlayout>Resource: <label value="@load(vm.selectedAllocation.lastName)" /></hlayout>
-						<hlayout>Project: <label value="@load(vm.selectedAllocation.title)" /></hlayout>
-						<hlayout>End date: <label value="@load(vm.selectedAllocation.endDate)" /></hlayout>
-						<hlayout>Allocation ID: <label value="@load(vm.selectedAllocation.allocationId)" /></hlayout>
-					</vlayout>
-				</hlayout>
 
-                
-                
-                Keyword:
-				<textbox value="@save(vm.keyword)" />
-				<button label="Search" iconSclass="z-icon-search" onClick="@command('search')" style="margin: 0 0 5px 5px"/>
-	
-	
-                <listbox model="@load(vm.allocationList)" 
-                emptyMessage="No allocation records found"
-                selectedItem="@save(vm.selectedAllocation)">
-                
-                <listhead>
-	                <!-- <listheader label="allocationId"/> -->
-	                <listheader label="personId"/>
-	                <listheader label="projectId"/>
-	                <listheader label="endDate"/>
-	                <listheader label="planviewProjectId"/>
-	                <listheader label="title"/>
-	                <listheader label="firstName"/>
-	                <listheader label="lastName"/>
-    	        </listhead>
-    	        <template name="model">
-    	        <listitem>
-    	        	<!-- <listcell label="@init(each.allocationId)"></listcell> -->
-    	        	<listcell label="@init(each.personId)"></listcell>
-    	        	<listcell label="@init(each.projectId)"></listcell>
-    	        	<listcell label="@init(each.endDate)"></listcell>
-    	        	<listcell label="@init(each.planviewProjectId)"></listcell>
-    	        	<listcell label="@init(each.title)"></listcell>
-    	        	<listcell label="@init(each.firstName)"></listcell>
-    	        	<listcell label="@init(each.lastName)"></listcell>
-    	        </listitem>
-    	        </template>
-                
-                
-                </listbox>
-                </div>
-            </tabpanel>
-            <tabpanel>
-             	<label id="Projectstext" sclass="nav_text">Εδώ θα μπει η φορμα και η Browse για το Projects</label>
-            </tabpanel>
-            <tabpanel>
-                <label id="Resourcestext" sclass="nav_text">Εδώ θα μπει η φορμα και η Browse για το Resources</label>
-            </tabpanel>
-            <tabpanel>
-                <window id="test" border="normal" height="98%">
-                	<vbox>
-					<hbox apply="org.zkoss.bind.BindComposer"
-					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.TimesheetExcelUploadVM')">
-						<label value="Upload Timesheet excel" />
-						<button label="Upload" upload="true"
-							onUpload="@command('onUploadPDF',upEvent=event)">
-						</button>
+
+	<style>
+
+
+
+		[class*="z-list"] { font-size: 12px; }
+		[class*="z-grid"] { font-size: 12px; }
+		
+		class*="z-listcell"] { height: 14px; }
+
+		.labelbold { font-weight: bold; font-size: 24px; color: red; }
+
+		.statusLabel { display: block; text-align : right; font-weight :
+		bold; }
+	</style>
+
+
+	<tabbox width="100%">
+		<tabs id="tabs">
+			<tab label="Projects" />
+			<tab label="Resources" />
+			<tab label="Import" />
+		</tabs>
+		<tabpanels>
+			<tabpanel>
+				<div apply="org.zkoss.bind.BindComposer"
+					onOK="@command('searchDemand')"
+					viewModel="@id('vm') @init('com.meluna.springbootjdbc.zk.vm.ProjectsVM')">
+
+
+					Keyword:
+					<textbox value="@save(vm.keywordForDemand)" />
+					<button label="Search" iconSclass="z-icon-search"
+						onClick="@command('searchDemand')" style="margin: 0 0 5px 5px" />
+					<hbox>
+						<groupbox open="false" mold="3d">
+							<caption label="@load(vm.captionLabelProject)" />
+							
+							<hbox width="100%">
+							<div >
+							<grid>
+							<columns>
+								<column label="Type" />
+								<column label="Content" />
+							</columns>
+							<rows>
+								<row>
+									<label value="Start Date"	 />
+									<label value="@load(vm.selectedDemand.startDate) @converter('formatedDate', format='yyyy/MM/dd')"/>
+									
+								</row>
+								<row>
+									Target Date
+									<label value="@load(vm.selectedDemand.targetDate) @converter('formatedDate', format='yyyy/MM/dd')"/>
+								</row>
+								<row>
+									Completion Date
+									<label value="@load(vm.selectedDemand.completionDate) @converter('formatedDate', format='yyyy/MM/dd')"/>
+								</row>
+							</rows>
+						</grid>
+						</div>
+						<div >
+
+						<listbox id="box"
+							multiple="true" checkmark="true"
+							model="@load(vm.resourceList)" fixedLayout="true"
+							 height="250px">
+							<listhead
+								sizable="true">
+								<listheader
+									label="Resources" />
+							</listhead>
+							<template
+								name="model">
+								<listitem>
+									<listcell
+										label="@init(each.name)">
+									</listcell>
+								</listitem>
+							</template>
+						</listbox>
+
+						</div>
+
+							</hbox>
+							
+							
+								
+						</groupbox>
+
 					</hbox>
-					<hbox apply="org.zkoss.bind.BindComposer"
-					
-					viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.DemandExcelUploadVM')">
-						<label value="Upload Demand excel" />
-						<button label="Upload" upload="true"
-							onUpload="@command('onUploadPDF',upEvent=event)">
-						</button>
+
+
+
+					<hbox>
+
+						<listbox model="@load(vm.demandList)"
+							emptyMessage="No demand records found"
+							selectedItem="@bind(vm.selectedDemand)" mold="paging"
+							pageSize="10" vflex="min" sclass="listboxbody"
+							height="500px">
+
+							<listhead sizable="true">
+								<listheader label="Id" width="90px"  />
+								<listheader label="Title"  width="550px" />
+								<listheader label="Status" width="140px" />
+								<listheader label="Favorite" width="90px"  />
+								
+								
+								<!--<listheader label="Start Date" width='9%'/>
+									<listheader label="Target Date" width='9%'/>
+									<listheader label="Completion Date" width='9%' /> -->
+							</listhead>
+							<template name="model">
+								<listitem height="15px">
+									<listcell sclass="listboxcell"
+										label="@init(each.ID) @converter('formatedNumber', format='##########')">
+									</listcell>
+									<listcell
+										label="@init(each.title)">
+									</listcell>
+									 <listcell label="@init(each.status)"></listcell>
+									  <listcell ><checkbox checked="@init(each.favorite)"   onCheck="@command('switchFavorite', checkEvent=event, favoriteId=each.ID)"></checkbox></listcell>
+									<!--<listcell label="@init(each.startDate) @converter('formatedDate', format='yyyy/MM/dd')"></listcell>
+										<listcell label="@init(each.targetDate) @converter('formatedDate', format='yyyy/MM/dd')"></listcell>
+										<listcell label="@init(each.completionDate) @converter('formatedDate', format='yyyy/MM/dd')"></listcell> -->
+								</listitem>
+							</template>
+
+
+						</listbox>
+						<div width="20px"></div>
+
+						<vbox>
+
+
+
+
+
+							Add new comment:
+							<textbox id="newcommenttextarea"
+								multiline="true" cols="65" rows="5"
+								value="@bind(vm.newComment)" />
+							<button label="Add Comment"
+								onClick="@command('addComment')" style="margin: 0 0 5px 5px" />
+							Comments:
+							<textbox id="commenttextarea"
+								multiline="true" cols="65" rows="22"
+								value="@bind(vm.currentComments)" />
+						</vbox>
 					</hbox>
+
+
+				</div>
+			</tabpanel>
+			<tabpanel>
+				<label id="Resourcestext" sclass="nav_text">
+					Εδώ θα μπει η φορμα και η Browse για το Resources
+				</label>
+			</tabpanel>
+			<tabpanel>
+				<window id="test" border="normal" height="98%">
+					<vbox>
+						<hbox apply="org.zkoss.bind.BindComposer"
+							viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.TimesheetExcelUploadVM')"
+							align="center" pack="start">
+							<label value="Upload Timesheet excel" />
+							<button label="Upload" upload="true"
+								onUpload="@command('onUploadPDF',upEvent=event)">
+							</button>
+						</hbox>
+						<hbox apply="org.zkoss.bind.BindComposer"
+							viewModel="@id('vm1') @init('com.meluna.springbootjdbc.zk.vm.DemandExcelUploadVM')"
+							align="center" pack="end">
+							<label value="Upload Demand excel" />
+							<button label="Upload" upload="true"
+								onUpload="@command('onUploadPDF',upEvent=event)">
+							</button>
+						</hbox>
 					</vbox>
 				</window>
-            </tabpanel>
-        </tabpanels>
-    </tabbox>
-    <separator height="30px"></separator>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	<separator height="30px"></separator>
 </zk>
